@@ -28,7 +28,7 @@ const contactsSlice = createSlice({
         state.isLoading = false;
         state.items = action.payload;
       })
-      .addCase(addContact.fullfield, (state, action) => {
+      .addCase(addContact.fulfilled, (state, action) => {
         state.isLoading = false;
         state.items.push(action.payload);
       })
