@@ -1,35 +1,44 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { nanoid } from "nanoid";
+import { fetchContacts, deleteContact } from "./contactsOps";
+
+const initialState = {
+  isLoading: false,
+  error: null,
+  items: [],
+};
+
+const isPending = (action) =>
+  typeof action.type === "string" && action.type.endsWith("/pending");
+
+const isRejected = (action) =>
+  typeof action.type === "string" && action.type.endsWith("/rejected");
+
+const pendingReducer = (state) => {
+  state.isLoading = true;
+  state.items = [];
+  state.error = null;
+};
 
 const contactsSlice = createSlice({
   name: "contacts",
-  initialState: {
-    items: [],
-  },
-  reducers: {
-    addContact: {
-      reducer(state, action) {
-        console.log(action.payload);
-        state.items.push(action.payload);
-      },
-      prepare(contact) {
-        return {
-          payload: {
-            ...contact,
-            id: nanoid(),
-          },
-        };
-      },
-    },
-
-    deleteContact(state, action) {
-      state.items = state.items.filter(
-        (contact) => contact.id !== action.payload
-      );
-    },
+  initialState,
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.items = action.payload;
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.items = action.payload;
+      })
+      .addMatcher(isPending, pendingReducer)
+      .addMatcher(isRejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
 export const contactsReducer = contactsSlice.reducer;
 export const selectContacts = (state) => state.contacts.items;
