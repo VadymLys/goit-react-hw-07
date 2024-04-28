@@ -13,14 +13,11 @@ export const selectError = createSelector(
   (contacts) => contacts.error
 );
 
-export const selectFilteredContacts = createSelector(
+export const selectVisibleContacts = createSelector(
   [selectContactsState, filteredContacts],
-    (contacts, filterName) => {
-        if (filteredContacts) {
-            return contacts.items.filter((contact) => {
-                contact.name.includes(filterName);
-            });
-        }
-        return contacts;
+  (contacts, filterName) => {
+    return contacts.items.filter((contact) =>
+      contact.name.toLowerCase().includes(filterName.toLowerCase())
+    );
   }
 );
