@@ -15,7 +15,6 @@ const isRejected = (action) =>
 
 const pendingReducer = (state) => {
   state.isLoading = true;
-  state.items = [];
   state.error = null;
 };
 
